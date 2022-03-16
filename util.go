@@ -66,3 +66,30 @@ func (t *Time) UnmarshalJSON(bytes []byte) error {
 	t.Time, err = time.Parse(timeFormat, valStr)
 	return err
 }
+
+type NullTime struct {
+	Time  Time
+	Valid bool
+}
+
+func (t NullTime) MarshalJSON() ([]byte, error) {
+	if !t.Valid {
+		return []byte("null"), nil
+	}
+
+	return json.Marshal(t.Time)
+}
+
+func (t *NullTime) UnmarshalJSON(bytes []byte) error {
+	if string(bytes) == "null" {
+		t.Valid = false
+		return nil
+	}
+
+	if err := json.Unmarshal(bytes, &t.Time); err != nil {
+		return err
+	}
+
+	t.Valid = true
+	return nil
+}

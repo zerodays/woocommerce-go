@@ -138,11 +138,11 @@ type Order struct {
 	BillingAddress    Address `json:"billing_address"`
 	ShippingAddress   Address `json:"shipping_address"`
 	// PaymentMethod is the ID of the Payment method
-	PaymentMethod      string `json:"payment_method"`
-	PaymentMethodTitle string `json:"payment_method_title"`
-	TransactionID      string `json:"transaction_id"`
-	DatePaid           Time   `json:"date_paid"`
-	DateCompleted      Time   `json:"date_completed"`
+	PaymentMethod      string   `json:"payment_method"`
+	PaymentMethodTitle string   `json:"payment_method_title"`
+	TransactionID      string   `json:"transaction_id"`
+	DatePaid           NullTime `json:"date_paid"`
+	DateCompleted      NullTime `json:"date_completed"`
 	// CartHash is the MD5 hash of the cart items.
 	CartHash      string          `json:"cart_hash"`
 	MetaData      []MetaData      `json:"meta_data"`

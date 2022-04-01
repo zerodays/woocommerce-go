@@ -135,8 +135,8 @@ type Order struct {
 	CustomerIPAddress string  `json:"customer_ip_address"`
 	CustomerUserAgent string  `json:"customer_user_agent"`
 	CustomerNote      string  `json:"customer_note"`
-	BillingAddress    Address `json:"billing_address"`
-	ShippingAddress   Address `json:"shipping_address"`
+	Billing           Address `json:"billing"`
+	Shipping          Address `json:"shipping"`
 	// PaymentMethod is the ID of the Payment method
 	PaymentMethod      string   `json:"payment_method"`
 	PaymentMethodTitle string   `json:"payment_method_title"`

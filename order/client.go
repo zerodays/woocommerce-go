@@ -28,7 +28,7 @@ func New(backend *backend.Backend) *Client {
 // List lists orders with given parameters.
 func (c Client) List(parameters woocommerce.Parameters) ([]*woocommerce.Order, error) {
 	// Execute authenticated request.
-	resp, err := c.backend.AuthenticatedRequest(http.MethodGet, pathList, nil, parameters)
+	resp, err := c.backend.AuthenticatedRequest(backend.APITypeRest, http.MethodGet, pathList, nil, parameters, nil)
 	if err != nil {
 		return nil, err
 	}

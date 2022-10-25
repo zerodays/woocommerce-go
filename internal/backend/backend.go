@@ -12,8 +12,19 @@ import (
 )
 
 const (
-	timeoutDuration = 1 * time.Minute
-	urlPathPrefix   = "/wp-json/wc/v3"
+	timeoutDuration     = 1 * time.Minute
+	urlPathPrefixRest   = "/wp-json/wc/v3"
+	urlPathPrefixBlocks = "/wp-json/wc/store/v1"
+)
+
+// APIType is the type of the API to call. Woocommerce has two APIs:
+// - [REST API](https://woocommerce.github.io/woocommerce-rest-api-docs/)
+// - [Blocks API](https://github.com/woocommerce/woocommerce-blocks/tree/trunk/src/StoreApi)
+type APIType string
+
+const (
+	APITypeRest   APIType = "rest"
+	APITypeBlocks APIType = "blocks"
 )
 
 type ErrInvalidStatusCode struct {
@@ -54,7 +65,7 @@ func New(baseURL, consumerKey, consumerSecret string) *Backend {
 // Responses with status code not in range of [200, 300) are being treated as an error.
 // The function returns http response and errors that might have occurred during the request execution.
 // If the error is nil, caller is responsible for closing the response body.
-func (b *Backend) AuthenticatedRequest(method, path string, body interface{}, parameters woocommerce.Parameters) (*http.Response, error) {
+func (b *Backend) AuthenticatedRequest(apiType APIType, method, path string, body interface{}, parameters woocommerce.Parameters, headers map[string]string) (*http.Response, error) {
 	client := &http.Client{
 		Timeout: timeoutDuration,
 	}
@@ -71,7 +82,16 @@ func (b *Backend) AuthenticatedRequest(method, path string, body interface{}, pa
 	}
 
 	// Build the URL.
-	reqURL := b.baseURL + urlPathPrefix + path
+	reqURL := b.baseURL
+	switch apiType {
+	case APITypeRest:
+		reqURL += urlPathPrefixRest
+	case APITypeBlocks:
+		reqURL += urlPathPrefixBlocks
+	default:
+		return nil, fmt.Errorf("[woocommerce-go]: invalid API type: %s", apiType)
+	}
+	reqURL += path
 	if parameters != nil {
 		reqURL += "?" + parameters.Values().Encode()
 	}
@@ -82,8 +102,15 @@ func (b *Backend) AuthenticatedRequest(method, path string, body interface{}, pa
 		return nil, fmt.Errorf("[woocommerce-go]: could not create a new request: %w", err)
 	}
 
-	req.Header.Set("Authorization", "Basic "+b.basicAuthentication)
+	if apiType == APITypeRest {
+		req.Header.Set("Authorization", "Basic "+b.basicAuthentication)
+	}
 	req.Header.Set("Content-Type", "application/json")
+
+	// Set custom headers
+	for key, value := range headers {
+		req.Header.Set(key, value)
+	}
 
 	// Execute the request
 	resp, err := client.Do(req)

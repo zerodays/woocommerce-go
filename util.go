@@ -93,3 +93,36 @@ func (t *NullTime) UnmarshalJSON(bytes []byte) error {
 	t.Valid = true
 	return nil
 }
+
+type Int int64
+
+func (i Int) MarshalJSON() ([]byte, error) {
+	val := strconv.FormatInt(int64(i), 10)
+	return json.Marshal(val)
+}
+
+func (i *Int) UnmarshalJSON(bytes []byte) error {
+	var val int64
+	err := json.Unmarshal(bytes, &val)
+	if err == nil {
+		*i = Int(val)
+		return nil
+	}
+
+	// Unmarshal to int64 failed. Try to unmarshal to string and
+	// convert the string to int64.
+	var valStr string
+	err = json.Unmarshal(bytes, &valStr)
+	if err != nil {
+		return err
+	}
+
+	// Convert to int64
+	val, err = strconv.ParseInt(valStr, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	*i = Int(val)
+	return nil
+}

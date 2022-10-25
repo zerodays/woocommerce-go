@@ -30,6 +30,18 @@ type CartItemTotals struct {
 	LineTotalTax      Int    `json:"line_total_tax"`
 }
 
+type CartAddress struct {
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Company   string `json:"company"`
+	Address1  string `json:"address_1"`
+	Address2  string `json:"address_2"`
+	City      string `json:"city"`
+	State     string `json:"state"`
+	Postcode  string `json:"postcode"`
+	Country   string `json:"country"`
+}
+
 type CartTotals struct {
 	CurrencyCode      string `json:"currency_code"`
 	CurrencyMinorUnit int    `json:"currency_minor_unit"`
@@ -60,7 +72,9 @@ type CartItem struct {
 
 // Cart holds the cart data.
 type Cart struct {
-	Coupons []Coupon   `json:"coupons"`
-	Items   []CartItem `json:"items"`
-	Totals  CartTotals `json:"totals"`
+	Coupons         []Coupon    `json:"coupons"`
+	Items           []CartItem  `json:"items"`
+	ShippingAddress CartAddress `json:"shipping_address"`
+	BillingAddress  CartAddress `json:"billing_address"`
+	Totals          CartTotals  `json:"totals"`
 }

@@ -71,11 +71,24 @@ type CartItem struct {
 	Totals           CartItemTotals `json:"totals"`
 }
 
+type CartShippingRateInner struct {
+	RateID       string `json:"rate_id"`
+	Price        Int    `json:"price"`
+	MethodID     string `json:"method_id"`
+	Selected     bool   `json:"selected"`
+	CurrencyCode string `json:"currency_code"`
+}
+
+type CartShippingRate struct {
+	ShippingRates []CartShippingRateInner `json:"shipping_rates"`
+}
+
 // Cart holds the cart data.
 type Cart struct {
-	Coupons         []Coupon    `json:"coupons"`
-	Items           []CartItem  `json:"items"`
-	ShippingAddress CartAddress `json:"shipping_address"`
-	BillingAddress  CartAddress `json:"billing_address"`
-	Totals          CartTotals  `json:"totals"`
+	Coupons         []Coupon           `json:"coupons"`
+	Items           []CartItem         `json:"items"`
+	ShippingAddress CartAddress        `json:"shipping_address"`
+	BillingAddress  CartAddress        `json:"billing_address"`
+	Totals          CartTotals         `json:"totals"`
+	ShippingRates   []CartShippingRate `json:"shipping_rates"`
 }

@@ -43,3 +43,22 @@ func (c Client) List(parameters woocommerce.Parameters) ([]*woocommerce.Order, e
 
 	return orders, nil
 }
+
+// Create creates a new order.
+func (c Client) Create(orderCreate *woocommerce.OrderCreate) (*woocommerce.Order, error) {
+	// Execute authenticated request.
+	resp, err := c.backend.AuthenticatedRequest(backend.APITypeRest, http.MethodPost, pathList, orderCreate, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Unmarshal JSON.
+	order := &woocommerce.Order{}
+	err = json.NewDecoder(resp.Body).Decode(&order)
+	if err != nil {
+		return nil, fmt.Errorf("[woocommerce-go]: could not unmarshal order json: %w", err)
+	}
+
+	return order, nil
+}

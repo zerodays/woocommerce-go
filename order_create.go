@@ -26,9 +26,9 @@ type OrderCreateShipping struct {
 }
 
 type OrderCreateItem struct {
-	ProductID int `json:"product_id"`
-	Quantity  int `json:"quantity"`
-	Total     Int `json:"total,omitempty"`
+	ProductID int   `json:"product_id"`
+	Quantity  int   `json:"quantity"`
+	Total     Float `json:"total,omitempty"`
 }
 
 type OrderCreateMetadata struct {

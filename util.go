@@ -126,3 +126,24 @@ func (i *Int) UnmarshalJSON(bytes []byte) error {
 	*i = Int(val)
 	return nil
 }
+
+// String is a string that is sometimes a number (thanks woocommerce).
+type String string
+
+func (s *String) UnmarshalJSON(bytes []byte) error {
+	var valStr string
+	err := json.Unmarshal(bytes, &valStr)
+	if err == nil {
+		*s = String(valStr)
+		return nil
+	}
+
+	var valNum int
+	err = json.Unmarshal(bytes, &valNum)
+	if err == nil {
+		*s = String(strconv.Itoa(valNum))
+		return nil
+	} else {
+		return err
+	}
+}

@@ -43,7 +43,7 @@ type MetaData struct {
 type OrderTax struct {
 	ID       int    `json:"id"`
 	RateCode string `json:"rate_code"`
-	RateID   string `json:"rate_id"`
+	RateID   String `json:"rate_id"`
 	Label    string `json:"label"`
 	Compound bool   `json:"compound"`
 

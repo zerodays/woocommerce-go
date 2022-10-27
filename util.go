@@ -2,7 +2,6 @@ package woocommerce
 
 import (
 	"encoding/json"
-	"math"
 	"strconv"
 	"time"
 )
@@ -13,8 +12,7 @@ const timeFormat = "2006-01-02T15:04:05"
 type Float float64
 
 func (f Float) MarshalJSON() ([]byte, error) {
-	val := math.Round(float64(f)*100) / 100 // Round to 2 decimal places
-	valStr := strconv.FormatFloat(val, 'f', 2, 64)
+	valStr := strconv.FormatFloat(float64(f), 'f', -1, 64)
 	return json.Marshal(valStr)
 }
 

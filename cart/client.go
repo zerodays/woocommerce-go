@@ -43,7 +43,7 @@ func (c Client) Get(cartToken string) (*woocommerce.Cart, error) {
 	headers := map[string]string{
 		headerCartToken: cartToken,
 	}
-	resp, err := c.backend.AuthenticatedRequest(backend.APITypeBlocks, http.MethodGet, "/pathCart", nil, nil, headers)
+	resp, err := c.backend.AuthenticatedRequest(backend.APITypeBlocks, http.MethodGet, pathCart, nil, nil, headers)
 	if err != nil {
 		return nil, err
 	}

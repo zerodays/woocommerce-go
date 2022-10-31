@@ -80,6 +80,8 @@ type CartShippingRateInner struct {
 }
 
 type CartShippingRate struct {
+	PackageID     int                     `json:"package_id"`
+	Name          string                  `json:"name"`
 	ShippingRates []CartShippingRateInner `json:"shipping_rates"`
 }
 

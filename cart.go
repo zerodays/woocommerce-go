@@ -93,6 +93,9 @@ type CartShippingRate struct {
 
 // Cart holds the cart data.
 type Cart struct {
+	// CartToken is the cart token returned by woocommerce on cart request.
+	CartToken string `json:"cart_token"`
+
 	Coupons         []Coupon           `json:"coupons"`
 	Items           []CartItem         `json:"items"`
 	ShippingAddress CartAddress        `json:"shipping_address"`

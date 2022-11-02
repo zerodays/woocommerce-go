@@ -56,6 +56,8 @@ func (c Client) Get(cartToken string) (*woocommerce.Cart, error) {
 		return nil, fmt.Errorf("[woocommerce-go] could not unmarshal cart json: %w", err)
 	}
 
+	// Add cart token to the cart.
+	cart.CartToken = resp.Header.Get(headerCartToken)
 	return cart, nil
 }
 
@@ -125,6 +127,9 @@ func (c Client) AddItem(cartToken string, itemID, quantity int, variations []woo
 	if err != nil {
 		return nil, fmt.Errorf("[woocommerce-go] could not unmarshal cart json: %w", err)
 	}
+
+	// Add cart token to the cart.
+	cart.CartToken = resp.Header.Get(headerCartToken)
 	return cart, nil
 }
 
@@ -163,6 +168,9 @@ func (c Client) RemoveItem(cartToken string, itemKey string) (*woocommerce.Cart,
 	if err != nil {
 		return nil, fmt.Errorf("[woocommerce-go] could not unmarshal cart json: %w", err)
 	}
+
+	// Add cart token to the cart.
+	cart.CartToken = resp.Header.Get(headerCartToken)
 	return cart, nil
 }
 
@@ -203,6 +211,9 @@ func (c Client) UpdateItem(cartToken, itemKey string, quantity int) (*woocommerc
 	if err != nil {
 		return nil, fmt.Errorf("[woocommerce-go] could not unmarshal cart json: %w", err)
 	}
+
+	// Add cart token to the cart.
+	cart.CartToken = resp.Header.Get(headerCartToken)
 	return cart, nil
 }
 
@@ -243,6 +254,9 @@ func (c Client) UpdateCustomer(cartToken string, billingAddress, shippingAddress
 	if err != nil {
 		return nil, fmt.Errorf("[woocommerce-go] could not unmarshal cart json: %w", err)
 	}
+
+	// Add cart token to the cart.
+	cart.CartToken = resp.Header.Get(headerCartToken)
 	return cart, nil
 }
 
@@ -283,5 +297,8 @@ func (c Client) SelectShippingRate(cartToken string, packageID int, rateID strin
 	if err != nil {
 		return nil, fmt.Errorf("[woocommerce-go] could not unmarshal cart json: %w", err)
 	}
+
+	// Add cart token to the cart.
+	cart.CartToken = resp.Header.Get(headerCartToken)
 	return cart, nil
 }

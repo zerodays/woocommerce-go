@@ -58,17 +58,23 @@ type CartTotals struct {
 	TotalTax          Int    `json:"total_tax"`
 }
 
+type CartItemVariation struct {
+	Attribute string `json:"attribute"`
+	Value     string `json:"value"`
+}
+
 type CartItem struct {
-	Key              string         `json:"key"`
-	ID               int            `json:"id"`
-	Quantity         int            `json:"quantity"`
-	Name             string         `json:"name"`
-	Summary          string         `json:"summary"`
-	ShortDescription string         `json:"short_description"`
-	Description      string         `json:"description"`
-	SKU              string         `json:"sku"`
-	Images           []CartImage    `json:"images"`
-	Totals           CartItemTotals `json:"totals"`
+	Key              string              `json:"key"`
+	ID               int                 `json:"id"`
+	Quantity         int                 `json:"quantity"`
+	Name             string              `json:"name"`
+	Summary          string              `json:"summary"`
+	ShortDescription string              `json:"short_description"`
+	Description      string              `json:"description"`
+	SKU              string              `json:"sku"`
+	Images           []CartImage         `json:"images"`
+	Totals           CartItemTotals      `json:"totals"`
+	Variations       []CartItemVariation `json:"variation"`
 }
 
 type CartShippingRateInner struct {

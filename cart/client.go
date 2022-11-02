@@ -87,7 +87,7 @@ func (c Client) getNonce(cartToken string) (string, error) {
 }
 
 // AddItem adds an item to the cart with given cart token.
-func (c Client) AddItem(cartToken string, itemID, quantity int) (*woocommerce.Cart, error) {
+func (c Client) AddItem(cartToken string, itemID, quantity int, variations []woocommerce.CartItemVariation) (*woocommerce.Cart, error) {
 	// Get nonce for the cart.
 	nonce, err := c.getNonce(cartToken)
 	if err != nil {
@@ -96,12 +96,14 @@ func (c Client) AddItem(cartToken string, itemID, quantity int) (*woocommerce.Ca
 
 	// Construct request body
 	type addItemRequest struct {
-		ID       int `json:"id"`
-		Quantity int `json:"quantity"`
+		ID         int                             `json:"id"`
+		Quantity   int                             `json:"quantity"`
+		Variations []woocommerce.CartItemVariation `json:"variation"`
 	}
 	req := addItemRequest{
-		ID:       itemID,
-		Quantity: quantity,
+		ID:         itemID,
+		Quantity:   quantity,
+		Variations: variations,
 	}
 
 	// Construct headers

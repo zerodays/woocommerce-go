@@ -98,7 +98,7 @@ func (c Client) AddItem(cartToken string, itemID, quantity int, variations []woo
 	type addItemRequest struct {
 		ID         int                             `json:"id"`
 		Quantity   int                             `json:"quantity"`
-		Variations []woocommerce.CartItemVariation `json:"variation"`
+		Variations []woocommerce.CartItemVariation `json:"variation,omitempty"`
 	}
 	req := addItemRequest{
 		ID:         itemID,

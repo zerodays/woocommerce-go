@@ -80,6 +80,8 @@ type CartItem struct {
 
 type CartShippingRateInner struct {
 	RateID       string `json:"rate_id"`
+	Name         string `json:"name"`
+	Description  string `json:"description"`
 	Price        Int    `json:"price"`
 	MethodID     string `json:"method_id"`
 	Selected     bool   `json:"selected"`

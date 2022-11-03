@@ -34,6 +34,7 @@ type CartAddress struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Email     string `json:"email"`
+	Phone     string `json:"phone,omitempty"`
 	Company   string `json:"company"`
 	Address1  string `json:"address_1"`
 	Address2  string `json:"address_2"`

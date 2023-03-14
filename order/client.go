@@ -8,7 +8,10 @@ import (
 	"net/http"
 )
 
-const pathList = "/orders"
+const (
+	pathList = "/orders"
+	pathEdit = "/orders/%d"
+)
 
 // Client is the API client used for working with orders.
 // It should not be initialized directly. Use client.API instead.
@@ -48,6 +51,26 @@ func (c Client) List(parameters woocommerce.Parameters) ([]*woocommerce.Order, e
 func (c Client) Create(orderCreate *woocommerce.OrderCreate) (*woocommerce.Order, error) {
 	// Execute authenticated request.
 	resp, err := c.backend.AuthenticatedRequest(backend.APITypeRest, http.MethodPost, pathList, orderCreate, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Unmarshal JSON.
+	order := &woocommerce.Order{}
+	err = json.NewDecoder(resp.Body).Decode(&order)
+	if err != nil {
+		return nil, fmt.Errorf("[woocommerce-go]: could not unmarshal order json: %w", err)
+	}
+
+	return order, nil
+}
+
+// Update updates the order with a given ID
+func (c Client) Update(orderID int, orderUpdate woocommerce.OrderUpdate) (*woocommerce.Order, error) {
+	// Execute authenticated request.
+	path := fmt.Sprintf(pathEdit, orderID)
+	resp, err := c.backend.AuthenticatedRequest(backend.APITypeRest, http.MethodPut, path, orderUpdate, nil, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -55,3 +55,7 @@ type OrderCreate struct {
 	MetaData           []OrderCreateMetadata `json:"meta_data"`
 	ShippingLines      []OrderShippingLine   `json:"shipping_lines"`
 }
+
+type OrderUpdate struct {
+	SetPaid bool `json:"set_paid"`
+}

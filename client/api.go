@@ -2,6 +2,7 @@ package client
 
 import (
 	"github.com/zerodays/woocommerce-go/cart"
+	"github.com/zerodays/woocommerce-go/customer"
 	"github.com/zerodays/woocommerce-go/internal/backend"
 	"github.com/zerodays/woocommerce-go/order"
 	"github.com/zerodays/woocommerce-go/tax"
@@ -9,9 +10,10 @@ import (
 
 // API is the API client. It should be created with the New function.
 type API struct {
-	Order *order.Client
-	Cart  *cart.Client
-	Tax   *tax.Client
+	Order    *order.Client
+	Cart     *cart.Client
+	Tax      *tax.Client
+	Customer *customer.Client
 }
 
 // Init initializes the API client with given credentials.
@@ -24,6 +26,7 @@ func (a *API) Init(baseURL, consumerKey, consumerSecret string) {
 	a.Order = order.New(b)
 	a.Cart = cart.New(b)
 	a.Tax = tax.New(b)
+	a.Customer = customer.New(b)
 }
 
 // New creates a new API client with given credentials.

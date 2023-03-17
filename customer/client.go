@@ -6,6 +6,7 @@ import (
 	"github.com/zerodays/woocommerce-go"
 	"github.com/zerodays/woocommerce-go/internal/backend"
 	"net/http"
+	"strconv"
 )
 
 const (
@@ -65,4 +66,22 @@ func (c Client) Retrieve(id string) (*woocommerce.Customer, error) {
 	}
 
 	return customer, nil
+}
+
+// Update updates the given customer. ID of the customer must be set.
+func (c Client) Update(customer *woocommerce.Customer) error {
+	path := fmt.Sprintf(pathRetrieve, strconv.Itoa(customer.ID))
+	resp, err := c.backend.AuthenticatedRequest(backend.APITypeRest, http.MethodPut, path, customer, nil, nil)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Unmarshal JSON.
+	err = json.NewDecoder(resp.Body).Decode(customer)
+	if err != nil {
+		return fmt.Errorf("[woocommerce-go]: could not unmarshal customer json: %w", err)
+	}
+
+	return nil
 }

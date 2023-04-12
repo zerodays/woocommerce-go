@@ -5,10 +5,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"github.com/zerodays/woocommerce-go"
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/zerodays/woocommerce-go"
 )
 
 const (
@@ -120,12 +121,21 @@ func (b *Backend) AuthenticatedRequest(apiType APIType, method, path string, bod
 
 	// Check valid response code range.
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		data, _ := io.ReadAll(resp.Body)
-		_ = resp.Body.Close()
+		if resp.StatusCode >= 400 {
+			var err = &woocommerce.Error{}
+			_ = json.NewDecoder(resp.Body).Decode(&err)
+			_ = resp.Body.Close()
 
-		return resp, ErrInvalidStatusCode{
-			StatusCode: resp.StatusCode,
-			Body:       string(data),
+			err.StatusCode = resp.StatusCode
+			return resp, err
+		} else {
+			data, _ := io.ReadAll(resp.Body)
+			_ = resp.Body.Close()
+
+			return resp, ErrInvalidStatusCode{
+				StatusCode: resp.StatusCode,
+				Body:       string(data),
+			}
 		}
 	}
 

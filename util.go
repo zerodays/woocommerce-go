@@ -43,6 +43,34 @@ func (f *Float) UnmarshalJSON(bytes []byte) error {
 	return nil
 }
 
+// NullFloat is a support type that marshals itself to string in JSON.
+type NullFloat struct {
+	Float Float
+	Valid bool
+}
+
+func (f NullFloat) MarshalJSON() ([]byte, error) {
+	if !f.Valid {
+		return []byte("null"), nil
+	}
+
+	return json.Marshal(f.Float)
+}
+
+func (f *NullFloat) UnmarshalJSON(bytes []byte) error {
+	if string(bytes) == "null" {
+		f.Valid = false
+		return nil
+	}
+
+	if err := json.Unmarshal(bytes, &f.Float); err != nil {
+		return err
+	}
+
+	f.Valid = true
+	return nil
+}
+
 // Time is a support type that marshals itself into JSON
 // without timezone.
 type Time struct {

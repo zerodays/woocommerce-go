@@ -58,7 +58,8 @@ func (f NullFloat) MarshalJSON() ([]byte, error) {
 }
 
 func (f *NullFloat) UnmarshalJSON(bytes []byte) error {
-	if string(bytes) == "null" {
+	str := string(bytes)
+	if str == "null" || str == "\"\"" {
 		f.Valid = false
 		return nil
 	}

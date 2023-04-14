@@ -11,6 +11,7 @@ import (
 
 const (
 	pathList          = "/products"
+	pathRetrieve      = "/products/%d"
 	pathListVariation = "/products/%d/variations"
 )
 
@@ -74,4 +75,25 @@ func (c Client[P, PV]) ListVariations(productID int, parameters woocommerce.Para
 	}
 
 	return variations, nil
+}
+
+// Retrieve retrieves a single product by its ID.
+func (c Client[P, PV]) Retrieve(productID int) (P, error) {
+	var product P
+
+	// Execute authenticated request.
+	path := fmt.Sprintf(pathRetrieve, productID)
+	resp, err := c.backend.AuthenticatedRequest(backend.APITypeRest, http.MethodGet, path, nil, nil, nil)
+	if err != nil {
+		return product, err
+	}
+	defer resp.Body.Close()
+
+	// Unmarshal JSON.
+	err = json.NewDecoder(resp.Body).Decode(&product)
+	if err != nil {
+		return product, fmt.Errorf("[woocommerce-go]: could not unmarshal product json: %w", err)
+	}
+
+	return product, nil
 }

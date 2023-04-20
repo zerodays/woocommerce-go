@@ -45,6 +45,7 @@ type OrderShippingLine struct {
 }
 
 type OrderCreate struct {
+	CustomerID         int                   `json:"customer_id,omitempty"`
 	PaymentMethod      string                `json:"payment_method"`
 	PaymentMethodTitle string                `json:"payment_method_title"`
 	Currency           string                `json:"currency"`

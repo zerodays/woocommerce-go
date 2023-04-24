@@ -6,6 +6,7 @@ import (
 	"github.com/zerodays/woocommerce-go"
 	"github.com/zerodays/woocommerce-go/internal/backend"
 	"net/http"
+	"strconv"
 )
 
 const (
@@ -28,12 +29,12 @@ func New(backend *backend.Backend) *Client {
 	}
 }
 
-// List lists orders with given parameters.
-func (c Client) List(parameters woocommerce.Parameters) ([]*woocommerce.Order, error) {
+// List returns a list of orders with given parameters and total order count.
+func (c Client) List(parameters woocommerce.Parameters) ([]*woocommerce.Order, int, error) {
 	// Execute authenticated request.
 	resp, err := c.backend.AuthenticatedRequest(backend.APITypeRest, http.MethodGet, pathList, nil, parameters, nil)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer resp.Body.Close()
 
@@ -41,10 +42,20 @@ func (c Client) List(parameters woocommerce.Parameters) ([]*woocommerce.Order, e
 	var orders []*woocommerce.Order
 	err = json.NewDecoder(resp.Body).Decode(&orders)
 	if err != nil {
-		return nil, fmt.Errorf("[woocommerce-go]: could not unmarshal orders json: %w", err)
+		return nil, 0, fmt.Errorf("[woocommerce-go]: could not unmarshal orders json: %w", err)
 	}
 
-	return orders, nil
+	// Get total order count
+	countStr := resp.Header.Get(backend.TotalCountHeader)
+	var count int
+	if countStr != "" {
+		count, err = strconv.Atoi(countStr)
+		if err != nil {
+			return nil, 0, fmt.Errorf("[woocommerce-go]: could not parse total order count: %w", err)
+		}
+	}
+
+	return orders, count, nil
 }
 
 // Create creates a new order.

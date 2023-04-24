@@ -35,12 +35,12 @@ func New[C any](backend *backend.Backend) *Client[C] {
 	}
 }
 
-// List lists customers with given parameters.
-func (c Client[C]) List(parameters woocommerce.Parameters) ([]C, error) {
+// List returns a list of customers with given parameters and total customer count.
+func (c Client[C]) List(parameters woocommerce.Parameters) ([]C, int, error) {
 	// Execute authenticated request.
 	resp, err := c.backend.AuthenticatedRequest(backend.APITypeRest, http.MethodGet, pathList, nil, parameters, nil)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer resp.Body.Close()
 
@@ -48,10 +48,20 @@ func (c Client[C]) List(parameters woocommerce.Parameters) ([]C, error) {
 	var customers []C
 	err = json.NewDecoder(resp.Body).Decode(&customers)
 	if err != nil {
-		return nil, fmt.Errorf("[woocommerce-go]: could not unmarshal customers json: %w", err)
+		return nil, 0, fmt.Errorf("[woocommerce-go]: could not unmarshal customers json: %w", err)
 	}
 
-	return customers, nil
+	// Get total order count
+	countStr := resp.Header.Get(backend.TotalCountHeader)
+	var count int
+	if countStr != "" {
+		count, err = strconv.Atoi(countStr)
+		if err != nil {
+			return nil, 0, fmt.Errorf("[woocommerce-go]: could not parse total customer count: %w", err)
+		}
+	}
+
+	return customers, count, nil
 }
 
 // Retrieve retrieves a single customer by its ID.

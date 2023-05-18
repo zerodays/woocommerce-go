@@ -1,9 +1,10 @@
 package order
 
 import (
-	"github.com/zerodays/woocommerce-go/internal/backend"
 	"os"
 	"testing"
+
+	"github.com/zerodays/woocommerce-go/internal/backend"
 )
 
 var baseURL, consumerKey, consumerSecret string
@@ -19,7 +20,7 @@ func TestMain(m *testing.M) {
 func TestClient_List(t *testing.T) {
 	b := backend.New(baseURL, consumerKey, consumerSecret)
 	client := New(b)
-	orders, err := client.List(nil)
+	orders, _, err := client.List(nil)
 	if err != nil {
 		t.Fatal(err)
 	}

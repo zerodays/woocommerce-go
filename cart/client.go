@@ -3,9 +3,11 @@ package cart
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/url"
+
 	"github.com/zerodays/woocommerce-go"
 	"github.com/zerodays/woocommerce-go/internal/backend"
-	"net/http"
 )
 
 const (
@@ -15,6 +17,8 @@ const (
 	pathUpdateItem         = "/cart/update-item"
 	pathUpdateCustomer     = "/cart/update-customer"
 	pathSelectShippingRate = "/cart/select-shipping-rate"
+	pathApplyCoupon        = "/cart/apply-coupon"
+	pathRemoveCoupon       = "/cart/remove-coupon"
 )
 
 const (
@@ -301,4 +305,52 @@ func (c Client) SelectShippingRate(cartToken string, packageID int, rateID strin
 	// Add cart token to the cart.
 	cart.CartToken = resp.Header.Get(headerCartToken)
 	return cart, nil
+}
+
+// executeCartCouponRequest executes a request to modify the cart with a coupon.
+func (c Client) executeCartCouponRequest(cartToken, couponCode, path string) (*woocommerce.Cart, error) {
+	// Get nonce for the cart.
+	nonce, err := c.getNonce(cartToken)
+	if err != nil {
+		return nil, fmt.Errorf("[woocommerce-go] could not get nonce: %w", err)
+	}
+
+	// Construct headers
+	headers := map[string]string{
+		headerNonce:     nonce,
+		headerCartToken: cartToken,
+	}
+
+	// Construct URL
+	params := url.Values{}
+	params.Set("code", couponCode)
+	url := fmt.Sprintf("%s?%s", path, params.Encode())
+
+	// Execute request.
+	resp, err := c.backend.AuthenticatedRequest(backend.APITypeBlocks, http.MethodPost, url, nil, nil, headers)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Unmarshal JSON response.
+	cart := &woocommerce.Cart{}
+	err = json.NewDecoder(resp.Body).Decode(&cart)
+	if err != nil {
+		return nil, fmt.Errorf("[woocommerce-go] could not unmarshal cart json: %w", err)
+	}
+
+	// Add cart token to the cart.
+	cart.CartToken = resp.Header.Get(headerCartToken)
+	return cart, nil
+}
+
+// ApplyCoupon applies a coupon to the cart.
+func (c Client) ApplyCoupon(cartToken, couponCode string) (*woocommerce.Cart, error) {
+	return c.executeCartCouponRequest(cartToken, couponCode, pathApplyCoupon)
+}
+
+// RemoveCoupon removes a coupon from the cart.
+func (c Client) RemoveCoupon(cartToken, couponCode string) (*woocommerce.Cart, error) {
+	return c.executeCartCouponRequest(cartToken, couponCode, pathRemoveCoupon)
 }

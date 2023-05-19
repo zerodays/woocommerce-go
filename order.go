@@ -88,11 +88,11 @@ type OrderShipping struct {
 }
 
 type OrderCoupon struct {
-	ID          int        `json:"ID"`
+	ID          int        `json:"ID,omitempty"`
 	Code        string     `json:"code"`
-	Discount    Float      `json:"discount"`
-	DiscountTax Float      `json:"discountTax"`
-	MetaData    []MetaData `json:"metaData"`
+	Discount    Float      `json:"discount,omitempty"`
+	DiscountTax Float      `json:"discount_tax,omitempty"`
+	MetaData    []MetaData `json:"meta_data,omitempty"`
 }
 
 type OrderRefund struct {

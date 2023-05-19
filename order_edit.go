@@ -55,6 +55,7 @@ type OrderCreate struct {
 	Items              []OrderCreateItem     `json:"line_items"`
 	MetaData           []OrderCreateMetadata `json:"meta_data"`
 	ShippingLines      []OrderShippingLine   `json:"shipping_lines"`
+	CouponLines        []OrderCoupon         `json:"coupon_lines,omitempty"`
 }
 
 type OrderUpdate struct {

@@ -37,6 +37,8 @@ type CartItemTotals struct {
 	CurrencyMinorUnit int    `json:"currency_minor_unit"`
 	LineTotal         Int    `json:"line_total"`
 	LineTotalTax      Int    `json:"line_total_tax"`
+	LineSubtotal      Int    `json:"line_subtotal"`
+	LineSubtotalTax   Int    `json:"line_subtotal_tax"`
 }
 
 type CartAddress struct {

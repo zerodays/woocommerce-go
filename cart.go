@@ -1,5 +1,13 @@
 package woocommerce
 
+type CouponType string
+
+const (
+	CouponTypePercent      CouponType = "percent"
+	CouponTypeFixedCart    CouponType = "fixed_cart"
+	CouponTypeFixedProduct CouponType = "fixed_product"
+)
+
 type CouponTotals struct {
 	CurrencyCode              string `json:"currency_code"`
 	CurrencySymbol            string `json:"currency_symbol"`
@@ -14,6 +22,7 @@ type CouponTotals struct {
 
 type Coupon struct {
 	Code   string       `json:"code"`
+	Type   CouponType   `json:"discount_type"`
 	Totals CouponTotals `json:"totals"`
 }
 

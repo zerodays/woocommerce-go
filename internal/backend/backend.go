@@ -60,6 +60,32 @@ func New(baseURL, consumerKey, consumerSecret string) *Backend {
 	}
 }
 
+type filterReader struct {
+	io.ReadCloser
+}
+
+func (f *filterReader) Read(p []byte) (int, error) {
+	n, err := f.ReadCloser.Read(p)
+	if err != nil {
+		return n, err
+	}
+
+	// Filter out null bytes
+	j := 0
+	for i := 0; i < n; i++ {
+		if p[i] != 0 {
+			p[j] = p[i]
+			j++
+		}
+	}
+
+	if j == 0 {
+		return 0, io.EOF
+	}
+
+	return j, nil
+}
+
 // AuthenticatedRequest executes an authenticated request to the woocommerce server.
 // Body can be se to nil to execute a request with an empty body.
 // Parameters can be set to nil to execute a request without GET parameters.
@@ -138,6 +164,8 @@ func (b *Backend) AuthenticatedRequest(apiType APIType, method, path string, bod
 			}
 		}
 	}
+
+	resp.Body = &filterReader{resp.Body}
 
 	return resp, nil
 }

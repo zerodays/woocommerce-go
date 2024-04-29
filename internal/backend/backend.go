@@ -129,6 +129,9 @@ func (b *Backend) AuthenticatedRequest(apiType APIType, method, path string, bod
 		return nil, fmt.Errorf("[woocommerce-go]: could not create a new request: %w", err)
 	}
 
+	// Remove User-Agent header, because go's default one is blocked by neoserve.
+	req.Header.Set("User-Agent", "")
+
 	if apiType == APITypeRest {
 		req.Header.Set("Authorization", "Basic "+b.basicAuthentication)
 	}

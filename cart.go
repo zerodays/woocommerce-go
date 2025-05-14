@@ -41,6 +41,15 @@ type CartItemTotals struct {
 	LineSubtotalTax   Int    `json:"line_subtotal_tax"`
 }
 
+type CartItemPrices struct {
+	Price             Int     `json:"price"`
+	RegularPrice      Int     `json:"regular_price"`
+	SalePrice         Int     `json:"sale_price"`
+	PriceRange        *string `json:"price_range,omitempty"`
+	CurrencyCode      string  `json:"currency_code"`
+	CurrencyMinorUnit int     `json:"currency_minor_unit"`
+}
+
 type CartAddress struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -86,6 +95,7 @@ type CartItem struct {
 	SKU              string              `json:"sku"`
 	Images           []CartImage         `json:"images"`
 	Totals           CartItemTotals      `json:"totals"`
+	Prices           CartItemPrices      `json:"prices"`
 	Variations       []CartItemVariation `json:"variation"`
 }
 

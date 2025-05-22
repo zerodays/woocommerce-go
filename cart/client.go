@@ -13,6 +13,7 @@ import (
 const (
 	pathCart               = "/cart"
 	pathAddItem            = "/cart/add-item"
+	pathBatch              = "/batch"
 	pathRemoveItem         = "/cart/remove-item"
 	pathUpdateItem         = "/cart/update-item"
 	pathUpdateCustomer     = "/cart/update-customer"
@@ -120,6 +121,73 @@ func (c Client) AddItem(cartToken string, itemID, quantity int, variations []woo
 
 	// Execute request.
 	resp, err := c.backend.AuthenticatedRequest(backend.APITypeBlocks, http.MethodPost, pathAddItem, req, nil, headers)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Unmarshal JSON response.
+	cart := &woocommerce.Cart{}
+	err = json.NewDecoder(resp.Body).Decode(&cart)
+	if err != nil {
+		return nil, fmt.Errorf("[woocommerce-go] could not unmarshal cart json: %w", err)
+	}
+
+	// Add cart token to the cart.
+	cart.CartToken = resp.Header.Get(headerCartToken)
+	return cart, nil
+}
+
+type BatchAddItem struct {
+	ItemID     int                             `json:"id"`
+	Quantity   int                             `json:"quantity"`
+	Variations []woocommerce.CartItemVariation `json:"variation,omitempty"`
+}
+
+// AddItems adds an item to the cart with given cart token.
+func (c Client) AddItems(cartToken string, items []BatchAddItem) (*woocommerce.Cart, error) {
+	// Get nonce for the cart.
+	nonce, err := c.getNonce(cartToken)
+	if err != nil {
+		return nil, fmt.Errorf("[woocommerce-go] could not get nonce: %w", err)
+	}
+
+	// Construct request body
+	type addItemsRequest struct {
+		Path    string            `json:"path"`
+		Method  string            `json:"method"`
+		Cache   string            `json:"cache"`
+		Body    BatchAddItem      `json:"body"`
+		Headers map[string]string `json:"headers"`
+	}
+
+	type batchRequest struct {
+		Requests []addItemsRequest `json:"requests"`
+	}
+
+	const pathAddItem = "/wc/store/v1/cart/add-item"
+
+	req := batchRequest{}
+	for _, item := range items {
+		req.Requests = append(req.Requests, addItemsRequest{
+			Path:   pathAddItem,
+			Method: http.MethodPost,
+			Cache:  "no-cache",
+			Body:   item,
+			Headers: map[string]string{
+				"Nonce": nonce,
+			},
+		})
+	}
+
+	// Construct headers
+	headers := map[string]string{
+		headerNonce:     nonce,
+		headerCartToken: cartToken,
+	}
+
+	// Execute request.
+	resp, err := c.backend.AuthenticatedRequest(backend.APITypeBlocks, http.MethodPost, pathBatch, req, nil, headers)
 	if err != nil {
 		return nil, err
 	}
